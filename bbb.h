@@ -65,11 +65,13 @@ int fwriteb(const void *restrict ptr, size_t nbits, bbb_t *restrict stream) {
 }
 
 int fflushb(bbb_t *restrict stream) {
-  stream->buf <<= 8 - stream->count;
-  if (fputc(stream->buf, stream->fp) == EOF)
-    return EOF;
-  stream->buf = 0;
-  stream->count = 0;
+  if (stream->count > 0) {
+    stream->buf <<= 8 - stream->count;
+    if (fputc(stream->buf, stream->fp) == EOF)
+      return EOF;
+    stream->buf = 0;
+    stream->count = 0;
+  }
   return fflush(stream->fp);
 }
 
